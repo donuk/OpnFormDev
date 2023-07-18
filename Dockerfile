@@ -21,6 +21,8 @@ RUN composer install
 
 
 
+ADD docker/php-fpm-wrapper.sh /usr/local/bin/
+RUN chmod a+x /usr/local/bin/*.sh
 RUN useradd opnform
 ADD docker/php-fpm.conf /etc/php/8.1/fpm/pool.d
 ADD docker/nginx.conf /etc/nginx/sites-enabled/default
