@@ -1,40 +1,30 @@
 FROM --platform=linux/amd64 ubuntu:23.04
 
-RUN apt-get update && apt-get install -y supervisor php8.1 php8.1-pgsql php8.1-fpm postgresql-15 nodejs nginx sudo composer php8.1-simplexml php8.1-bcmath php8.1-gd php8.1-curl php8.1-zip npm && apt-get clean
 
 CMD ["/usr/bin/supervisord"]
 
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-
 WORKDIR /app
-ADD package.json /app/package.json
-ADD package-lock.json /app/package-lock.json
-RUN npm install
-
-ADD resources /app/resources
-ADD tailwind.config.js vite.config.js postcss.config.js /app/
-RUN npm run build
-
-ADD app /app/app
-ADD bootstrap /app/bootstrap
-ADD config /app/config
-ADD database /app/database
-ADD public public
-ADD routes routes
-ADD tests tests
-ADD composer.json composer.lock artisan phpunit.xml ./
-RUN composer install
-
-
-ADD docker/postgres-wrapper.sh /usr/local/bin/
-ADD docker/php-fpm-wrapper.sh /usr/local/bin/
-RUN ln -s /app/artisan /usr/local/bin/artisan
-RUN chmod a+x /usr/local/bin/*.sh
-RUN useradd opnform
-ADD docker/php-fpm.conf /etc/php/8.1/fpm/pool.d
-ADD docker/nginx.conf /etc/nginx/sites-enabled/default
-ADD docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 ADD . .
-RUN chmod a+x /app/artisan
-ADD .env.example .env
+
+RUN ln -s /app/artisan /usr/local/bin/artisan \
+    && apt-get update \
+    && apt-get install -y supervisor php8.1 php8.1-pgsql php8.1-fpm postgresql-15 nodejs nginx sudo composer php8.1-simplexml php8.1-bcmath php8.1-gd php8.1-curl php8.1-zip npm redis\
+    && cp docker/*-wrapper.sh /usr/local/bin \
+    && chmod a+x /usr/local/bin/*.sh /app/artisan \
+    && useradd opnform \
+    && cp .env.example .env \
+    && echo "daemon off;" >> /etc/nginx/nginx.conf\
+    && cp docker/php-fpm.conf /etc/php/8.1/fpm/pool.d\
+    && cp docker/nginx.conf /etc/nginx/sites-enabled/default\
+    && cp docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf\
+    && npm install && npm run build && rm -rf node_modules\
+    && composer install\
+    && echo "daemonize no" >> /etc/redis/redis.conf\
+    && echo "appendonly yes" >> /etc/redis/redis.conf\
+    && echo "dir /persist/redis/data" >> /etc/redis/redis.conf\
+    && apt-get remove -y composer npm nodejs\
+    && apt-get autoremove -y\
+    && apt-get clean
+    
+
+EXPOSE 80
