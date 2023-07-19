@@ -38,6 +38,7 @@ EOF
         sleep 5;
     done
 
+    artisan migrate
 fi
 
 wait

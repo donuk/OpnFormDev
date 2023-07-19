@@ -29,11 +29,12 @@ RUN composer install
 ADD docker/postgres-wrapper.sh /usr/local/bin/
 ADD docker/php-fpm-wrapper.sh /usr/local/bin/
 RUN ln -s /app/artisan /usr/local/bin/artisan
-RUN chmod a+x /usr/local/bin/*.sh /app/artisan
+RUN chmod a+x /usr/local/bin/*.sh
 RUN useradd opnform
 ADD docker/php-fpm.conf /etc/php/8.1/fpm/pool.d
 ADD docker/nginx.conf /etc/nginx/sites-enabled/default
 ADD docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 ADD . .
+RUN chmod a+x /app/artisan
 ADD .env.example .env

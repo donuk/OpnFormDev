@@ -19,6 +19,15 @@ ln -sf /persist/storage /app/storage
 export LOG_CHANNEL=errorlog
 . /app/.env
 
+[ "x$APP_KEY" != "x" ] || {
+    artisan key:generate
+    . /app/.env
+}
+[ "x$JWT_SECRET" != "x" ] || {
+    artisan jwt:secret -f
+    . /app/.env
+}
+
 /usr/sbin/php-fpm8.1
 
 tail -f /var/log/opnform.log
