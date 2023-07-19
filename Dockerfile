@@ -13,6 +13,7 @@ RUN ln -s /app/artisan /usr/local/bin/artisan \
     && chmod a+x /usr/local/bin/*.sh /app/artisan \
     && useradd opnform \
     && cp .env.example .env \
+    && sed 's/LOG_CHANNEL=stack/LOG_CHANNEL=errorlog/' -i .env\
     && echo "daemon off;" >> /etc/nginx/nginx.conf\
     && cp docker/php-fpm.conf /etc/php/8.1/fpm/pool.d\
     && cp docker/nginx.conf /etc/nginx/sites-enabled/default\
