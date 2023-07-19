@@ -6,3 +6,6 @@ services:
     ports:
       - 80:80
       - 443:443
+    volumes:
+      - ./docker-data:/persist
+      - .env:/app/.env/

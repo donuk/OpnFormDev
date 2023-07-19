@@ -1,12 +1,13 @@
-#!/bin/bash
+#!/bin/bash +ex
 
 if [ -d /app/storage ]; then
-    rm -rf /app/initial-storage
-    mv /app/storage /app/initial-storage
+    rm -rf /etc/initial-storage
+    mv /app/storage /etc/initial-storage
 fi
 
 if [ ! -d /persist/storage ]; then
-    cp -a /app/initial-storage /persist/storage
+    echo "Initialising blank storage dir"
+    cp -a /etc/initial-storage /persist/storage
     chmod 777 -R /persist/storage
 fi
 
@@ -16,6 +17,7 @@ chown opnform /var/log/opnform.log
 ln -sf /persist/storage /app/storage
 
 export LOG_CHANNEL=errorlog
+. /app/.env
 
 /usr/sbin/php-fpm8.1
 
