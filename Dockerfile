@@ -13,14 +13,23 @@ WORKDIR /app
 ADD package.json /app/package.json
 ADD package-lock.json /app/package-lock.json
 RUN npm install
+
+ADD resources /app/resources
+ADD tailwind.config.js vite.config.js postcss.config.js /app/
 RUN npm run build
 
-
-ADD / /app
+ADD app /app/app
+ADD bootstrap /app/bootstrap
+ADD config /app/config
+ADD database /app/database
+ADD public public
+ADD routes routes
+ADD tests tests
+ADD composer.json composer.lock artisan phpunit.xml ./
+RUN ls 
 RUN composer install
 
-
-
+ADD . .
 ADD docker/php-fpm-wrapper.sh /usr/local/bin/
 RUN chmod a+x /usr/local/bin/*.sh
 RUN useradd opnform
