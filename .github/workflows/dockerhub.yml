@@ -12,9 +12,7 @@ name: Publish Docker image
 on:
   push:
     tags:
-      - "*"
-    branches:
-      - "wip-build-dockerhub-from-github"
+      - "v*"
 
 jobs:
   push_to_registry:
@@ -22,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get tag name
-        run: ( echo "TAG_NAME=${GITHUB_REF#refs/*/}"; echo "DOCKER_REPO=${{secrets.DOCKER_REPO}}") >> $GITHUB_ENV
+        run: ( echo "TAG_NAME=${GITHUB_REF#refs/*/v}"; echo "DOCKER_REPO=${{secrets.DOCKER_REPO}}") >> $GITHUB_ENV
 
       - name: Check out the repo
         uses: actions/checkout@v3
