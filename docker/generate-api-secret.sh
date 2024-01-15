@@ -7,7 +7,7 @@ main() {
 generate_api_secrets() {
 	if ! is_configured; then
 		SECRET=$(random_string)
-		add_secret_to_env_file /app/.nuxt.env NUXT_API_SECRET $SECRET
+		add_secret_to_env_file /app/client/.env NUXT_API_SECRET $SECRET
 		add_secret_to_env_file /app/.env FRONT_API_SECRET $SECRET
 	fi
 }
