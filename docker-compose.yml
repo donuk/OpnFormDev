@@ -12,9 +12,8 @@ services:
       DB_CONNECTION: ${DB_CONNECTION:-pgsql}
       LOG_LEVEL: ${LOG_LEVEL:-debug}
       LOG_CHANNEL: ${LOG_CHANNEL:-errorlog}
+    env_file: ./.env
     volumes:
-      - ./.env:/usr/share/nginx/html/.env
-      - ./client/.env:/usr/share/nginx/html/client/.env
       - laravel-persist:/persist
 
   ui:
@@ -23,9 +22,10 @@ services:
       APP_URL: ${APP_URL:-http://localhost}
       NUXT_PUBLIC_APP_URL: ${NUXT_PUBLIC_APP_URL:-${APP_URL:-/}}
       NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-$APP_URL/api}
-      NUXT_PRIVATE_API_BASE: http://server/api
+      NUXT_PRIVATE_API_BASE: http://ingress/api
+    env_file: ./client/.env
     volumes:
-      - ./client/.env:/app/.env
+      - ./client:/app
 
 
   redis:

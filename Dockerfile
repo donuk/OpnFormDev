@@ -38,6 +38,7 @@ ADD database ./database
 ADD public public
 ADD routes routes
 ADD tests tests
+ADD resources resources
 ADD storage ./storage
 RUN chmod 777 -R storage
 
