@@ -50,5 +50,4 @@ COPY docker/generate-api-secret.sh /usr/local/bin/
 RUN chmod a+x /usr/local/bin/*
 
 ENTRYPOINT [ "/usr/local/bin/opnform-entrypoint" ]
-ADD .env.docker .env
 CMD php-fpm

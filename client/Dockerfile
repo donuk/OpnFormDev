@@ -10,7 +10,6 @@ ADD ./package.json ./package-lock.json ./
 RUN npm install
 
 ADD . /app/
-RUN cp .env.docker .env
 RUN npm run build
 
 FROM node:20-alpine

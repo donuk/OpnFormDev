@@ -12,9 +12,15 @@ services:
       DB_CONNECTION: ${DB_CONNECTION:-pgsql}
       LOG_LEVEL: ${LOG_LEVEL:-debug}
       LOG_CHANNEL: ${LOG_CHANNEL:-errorlog}
+      AWS_ENDPOINT: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ACCESS_KEY:-minio}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_KEY:-minio123}
+      AWS_REGION: eu-west-1
+      AWS_BUCKET: laravel-bucket
     env_file: ./.env
     volumes:
       - laravel-persist:/persist
+      - minio-storage:/minio
 
   ui:
     image: jhumanj/opnform-ui:latest
@@ -33,6 +39,14 @@ services:
 
   minio:
     image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minio123}
+    ports:
+      - 9001:9001
+    volumes:
+      - minio-storage:/data
 
   db:
     image: postgres:latest
