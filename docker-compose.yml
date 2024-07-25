@@ -1,0 +1,49 @@
+---
+services:
+  server:
+    build:
+      context: .
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+
+      DB_DATABASE: ${DB_DATABASE:-forge}
+      DB_USERNAME: ${DB_USERNAME:-forge}
+      DB_PASSWORD: ${DB_PASSWORD:-forge}
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      LOG_CHANNEL: ${LOG_CHANNEL:-errorlog}
+    volumes:
+      - ./config:/usr/share/nginx/html/config
+      - ./index.php:/usr/share/nginx/html/index.php
+      - ./.env:/usr/share/nginx/html/.env
+      - ./client/.env:/usr/share/nginx/html/client/.env
+
+  client:
+    build:
+      context: ./client/
+    environment:
+      APP_URL: ${APP_URL:-http://localhost}
+      NUXT_PUBLIC_APP_URL: ${NUXT_PUBLIC_APP_URL:-${APP_URL:-/}}
+      NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-$APP_URL/api}
+      NUXT_PRIVATE_API_BASE: http://server/api
+    volumes:
+      - ./client/.env:/app/.env
+
+
+  redis:
+    image: redis:latest
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-forge}
+      POSTGRES_USER: ${DB_USERNAME:-forge}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-forge}
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/templates/default.conf.template
+    ports:
+      - 80:80

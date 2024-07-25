@@ -1,0 +1,32 @@
+#!/bin/bash
+chmod a+x ./artisan
+
+read_env() {
+    set +x
+    . .env
+    set -x
+}
+read_env
+
+[ "x$APP_KEY" != "x" ] || {
+    ./artisan key:generate
+    read_env
+}
+[ "x$JWT_SECRET" != "x" ] || {
+    ./artisan jwt:secret -f
+    read_env
+}
+
+[ "x$FRONT_API_SECRET" != "x" ] || {
+	/usr/local/bin/generate-api-secret.sh
+    read_env
+}
+
+./artisan migrate
+
+echo Running /usr/local/bin/docker-php-entrypoint "$@"
+/usr/local/bin/docker-php-entrypoint "$@"
+
+echo "Finished???"
+
+bash
