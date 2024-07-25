@@ -1,8 +1,7 @@
 ---
 services:
-  server:
-    build:
-      context: .
+  api:
+    image: jhumanj/opnform-api:latest
     environment:
       DB_HOST: db
       REDIS_HOST: redis
@@ -14,14 +13,11 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-debug}
       LOG_CHANNEL: ${LOG_CHANNEL:-errorlog}
     volumes:
-      - ./config:/usr/share/nginx/html/config
-      - ./index.php:/usr/share/nginx/html/index.php
       - ./.env:/usr/share/nginx/html/.env
       - ./client/.env:/usr/share/nginx/html/client/.env
 
-  client:
-    build:
-      context: ./client/
+  ui:
+    image: jhumanj/opnform-ui:latest
     environment:
       APP_URL: ${APP_URL:-http://localhost}
       NUXT_PUBLIC_APP_URL: ${NUXT_PUBLIC_APP_URL:-${APP_URL:-/}}
