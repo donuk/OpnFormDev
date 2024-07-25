@@ -1,32 +1,65 @@
 #!/bin/bash
-chmod a+x ./artisan
+
+main() {
+    prep_storage
+    prep_laravel_secrets
+    apply_db_migrations
+    read_env
+    run_server "$@"
+}
 
 read_env() {
-    set +x
+    #set +x
     . .env
-    set -x
+    #set -x
 }
-read_env
 
-[ "x$APP_KEY" != "x" ] || {
-    ./artisan key:generate
+prep_laravel_secrets() {
     read_env
+    chmod a+x ./artisan
+
+    [ "x$APP_KEY" != "x" ] || {
+        ./artisan key:generate
+        read_env
+    }
+    [ "x$JWT_SECRET" != "x" ] || {
+        ./artisan jwt:secret -f
+        read_env
+    }
+
+    [ "x$FRONT_API_SECRET" != "x" ] || {
+        /usr/local/bin/generate-api-secret.sh
+        read_env
+    }
 }
-[ "x$JWT_SECRET" != "x" ] || {
-    ./artisan jwt:secret -f
-    read_env
+
+apply_db_migrations() {
+    ./artisan migrate
 }
 
-[ "x$FRONT_API_SECRET" != "x" ] || {
-	/usr/local/bin/generate-api-secret.sh
-    read_env
+run_server() {
+    /usr/local/bin/docker-php-entrypoint "$@"
 }
 
-./artisan migrate
+prep_storage() {
+    [ -L storage ] || {
+        echo "Backing up initial storage directory"
+        rm -rf /etc/initial-storage
+        mv ./storage /etc/initial-storage
+    }
 
-echo Running /usr/local/bin/docker-php-entrypoint "$@"
-/usr/local/bin/docker-php-entrypoint "$@"
+    [ -d /persist/storage ] || {
+        echo "Initialising blank storage dir"
+        mkdir -p /persist
+        cp -a /etc/initial-storage /persist/storage
+        chmod 777 -R /persist/storage
+    }
 
-echo "Finished???"
+    touch /var/log/opnform.log
+    chown www-data /var/log/opnform.log
 
-bash
+    echo "Linking persistent storage into app"
+    ln -t . -sf /persist/storage
+}
+
+main "$@"

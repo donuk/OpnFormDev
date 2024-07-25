@@ -15,6 +15,7 @@ services:
     volumes:
       - ./.env:/usr/share/nginx/html/.env
       - ./client/.env:/usr/share/nginx/html/client/.env
+      - laravel-persist:/persist
 
   ui:
     image: jhumanj/opnform-ui:latest
@@ -30,16 +31,26 @@ services:
   redis:
     image: redis:latest
 
+  minio:
+    image: minio/minio:latest
+
   db:
     image: postgres:latest
     environment:
       POSTGRES_DB: ${DB_DATABASE:-forge}
       POSTGRES_USER: ${DB_USERNAME:-forge}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-forge}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
-  nginx:
+  ingress:
     image: nginx:latest
     volumes:
       - ./docker/nginx.conf:/etc/nginx/templates/default.conf.template
     ports:
       - 80:80
+
+volumes:
+  laravel-persist:
+  postgres-data:
+  minio-storage:
