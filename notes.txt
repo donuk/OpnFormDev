@@ -1,0 +1,5 @@
+minio internal/external hostname mismatch ??
+
+cookies after reboot ??
+
+encryption key generation ??
