@@ -61,7 +61,7 @@ prep_storage() {
     echo "Linking persistent storage into app"
     ln -t . -sf /persist/storage
 
-    [ -dd /minio/$AWS_BUCKET ] || mkdir -m 777 /minio/$AWS_BUCKET
+    [ -d /minio/$AWS_BUCKET ] || mkdir -m 777 /minio/$AWS_BUCKET
 }
 
 main "$@"
