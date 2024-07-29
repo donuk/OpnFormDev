@@ -31,8 +31,6 @@ services:
       NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-$APP_URL/api}
       NUXT_PRIVATE_API_BASE: http://ingress/api
     env_file: ./client/.env
-    volumes:
-      - ./client:/app
 
 
   redis:
