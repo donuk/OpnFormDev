@@ -2,17 +2,13 @@ FROM php:8.3-fpm
 
 # syntax=docker/dockerfile:1.3-labs
 
-RUN apt-get update
-RUN apt-get install -y libzip-dev libpng-dev
-RUN apt-get install -y postgresql-client libpq-dev
+RUN apt-get update && apt-get install -y libzip-dev libpng-dev postgresql-client libpq-dev && apt-get clean
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 # RUN apt-get -y install --fix-missing apt-utils build-essential git curl libcurl4 libcurl4-openssl-dev zlib1g-dev libzip-dev zip libbz2-dev locales libmcrypt-dev libicu-dev libonig-dev libxml2-dev
 #RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-RUN docker-php-ext-install pdo pgsql pdo_pgsql gd bcmath zip
-RUN pecl install redis
-RUN docker-php-ext-enable redis
+RUN docker-php-ext-install pdo pgsql pdo_pgsql gd bcmath zip && pecl install redis && docker-php-ext-enable redis
 
 
 WORKDIR /usr/share/nginx/html/
