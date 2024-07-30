@@ -1,0 +1,19 @@
+#!/bin/sh
+
+main() {
+    wait_for_api_secret
+    . .env
+    run_server "$@"
+}
+wait_for_api_secret() {
+    until [ -f /secrets/configured ]; do
+        echo "Waiting for api secret..."
+        sleep 1
+    done
+}
+run_server() {
+    echo "Running " node "$@"
+    "$@"
+}
+
+main "$@"
