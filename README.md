@@ -83,23 +83,32 @@ cp client/.env.docker client/.env
 docker-compose up
 ```
 
-You should now be able to access the application by visiting  http://localhost in a web browser. 
+You should now be able to access the application by visiting  http://localhost in a web browser.
+
+If you need to customise the .env files it may be best to do this before running `docker-compose`.  Most settings can be updated later but some (e.g. the database login details) cannot easily be updated later, the database and users are created on first boot and will not be recreated if these details change.
 
 > 👀 **Server Deployment**: If you are deploying OpnForm on a server (not locally), then you will [need to use 2 .env files](https://github.com/JhumanJ/opnform?tab=readme-ov-file#using-custom-env-files) to configure the app URLs (`APP_URL` in `.env` and both `NUXT_PUBLIC_APP_URL` & `NUXT_PUBLIC_API_BASE` in `client/.env`).
 
+Your data (e.g. the database and uploaded files) will be stored in named docker volumes.  These, along with the docker containers, will be named according to the directory name you have the project set up in.  If you rename the directory you may need to also rename the volumes to match, you could also rename the containers to match if you wanted to keep e.g. the log history but the containers themselves should not store any permanent data so can be recreated as necessary.
+
+To reset all files you can run the following command.  THIS WILL DELETE ALL YOUR DATA AND CANNOT BE UNDONE:
+
+```
+docker-compose down --volumes --rmi all --remove-orphans
+```
+
+This will stop and delete all running containers as well as the related volumes and images.  When you recreate them (e.g. using `docker-compose up`) they will be reset
 
 #### Using custom .env files
 
 The docker-compose set up will load in the .env and client/.env files.
 
-*** FIXME If you run the system without providing .env files then it will never be possible to provide them ***
-
-
 #### Upgrading docker installations
 
 **Please consult the upgrade instructions for the latest opnform version**, e.g. if upgrading from v1 to v2 please check the v2 instructions as the process may change in future releases.
 
-Normal upgrade procedure would be to update the docker-compose.yml file(s) and then apply the changes by re-running:
+Normal upgrade procedure would be to update the source code in your project directory to the latest version and then apply the changes by re-running:
+
 ```
 docker-compose up 
 ```
